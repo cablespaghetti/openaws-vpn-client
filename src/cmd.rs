@@ -175,7 +175,22 @@ pub async fn connect_ovpn(
                 log.append_process(pid, line.as_str());
                 let dns_server = parse_dns(line.to_string());
                 if dns_server.is_some() {
-                    println!("DNS Server is {:?}", dns_server.as_deref().unwrap().to_string()); 
+                    let dns_server = dns_server.as_deref().unwrap().to_string();
+                    println!("DNS Server is {:?}", dns_server);
+                    let dns_output = Command::new("pkexec")
+                        .arg("resolvectl")
+                        .arg("dns")
+                        .arg("tun0")
+                        .arg(dns_server)
+                        .output()
+                        .expect("Failed to execute command");
+                    let domain_output = Command::new("pkexec")
+                        .arg("resolvectl")
+                        .arg("domain")
+                        .arg("tun0")
+                        .arg("~.")
+                        .output()
+                        .expect("Failed to execute command");
                 }
             } else {
                 break;
