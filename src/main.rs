@@ -215,7 +215,7 @@ fn build_main_grid(app: Rc<VpnApp>) -> MainGrid {
         });
     }
 
-    app.setup_state_manager(status_text_rc, app.log.clone(), Rc::new(connect_button));
+    app.setup_state_manager(status_text_rc, Rc::new(connect_button));
 
     MainGrid {
         grid: main_grid,
