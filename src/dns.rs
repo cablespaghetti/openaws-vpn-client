@@ -92,3 +92,16 @@ pub fn parse_dns(line: String) -> Option<String> {
     }
     None
 }
+
+/// parse TUN/TAP device from openvpn log written to stdout
+pub fn parse_tun_device(line: String) -> Option<String> {
+    if !line.contains("TUN/TAP device") {
+        return None;
+    } else {
+    }
+    let tun_device_re = Regex::new(r"TUN/TAP device ([a-z0-9]+) opened").unwrap();
+    for device in tun_device_re.captures_iter(&line) {
+        return Some((&device[1]).to_string());
+    }
+    None
+}
