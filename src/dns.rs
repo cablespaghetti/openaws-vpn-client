@@ -82,10 +82,9 @@ fn rng_domain() -> String {
 
 /// parse DNS from openvpn log written to stdout
 pub fn parse_dns(line: String) -> Option<String> {
-    let header = &line.as_bytes()[..32];
-    // expect a header for this line
-    if std::str::from_utf8(header).unwrap() != "PUSH: Received control message: ".to_string() {
+    if !line.contains("PUSH: Received control message") {
         return None;
+    } else {
     }
     let dhcp_option_dns_re = Regex::new(r"dhcp-option DNS ([^,]+),").unwrap();
     for ip in dhcp_option_dns_re.captures_iter(&line) {
@@ -93,4 +92,3 @@ pub fn parse_dns(line: String) -> Option<String> {
     }
     None
 }
-

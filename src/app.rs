@@ -44,9 +44,9 @@ impl VpnApp {
         }
     }
 
-    pub fn setup_state_manager(&self, label: Rc<Label>, log: Arc<Log>, btn: Rc<Button>) {
+    pub fn setup_state_manager(&self, label: Rc<Label>, btn: Rc<Button>) {
         let mut b = self.state.lock().unwrap();
-        *b = Some(StateManager::new(label, log, btn));
+        *b = Some(StateManager::new(label, btn));
     }
 
     pub fn set_connection_manager(&self, manager: ConnectionManager) {
