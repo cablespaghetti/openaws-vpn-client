@@ -1,4 +1,4 @@
-use crate::dns::parse_dns;
+use crate::dns::{parse_dns, parse_tun_device};
 use crate::saml_server::Saml;
 use crate::{LocalConfig, Log};
 use lazy_static::lazy_static;
@@ -169,21 +169,32 @@ pub async fn connect_ovpn(
     let mut lines = buf.lines();
 
     let mut next = lines.next_line().await;
+    let mut dns_server = String::new();
+    let mut tun_device = String::new();
+    let mut resolvectl_run = false;
 
     loop {
         if let Ok(ref line) = next {
             if let Some(line) = line {
                 log.append_process(pid, line.as_str());
-                let dns_server = parse_dns(line.to_string());
-                if dns_server.is_some() {
-                    let dns_server = dns_server.as_deref().unwrap().to_string();
+                let dns_server_some = parse_dns(line.to_string());
+                if dns_server_some.is_some() {
+                    dns_server = dns_server_some.as_deref().unwrap().to_string();
                     println!("DNS Server is {:?}", dns_server);
-                    let dns_output = Command::new("pkexec")
+                }
+                let tun_device_some = parse_tun_device(line.to_string());
+                if tun_device_some.is_some() {
+                    tun_device = tun_device_some.as_deref().unwrap().to_string();
+                    println!("Tun device is {:?}", tun_device);
+                }
+                if !tun_device.is_empty() && !dns_server.is_empty() && !resolvectl_run {
+                    Command::new("pkexec")
                         .arg("/bin/sh")
                         .arg("-c")
-                        .arg(format!("resolvectl dns tun0 {dns_server} && resolvectl domain tun0 ~."))
+                        .arg(format!("resolvectl dns {tun_device} {dns_server} && resolvectl domain {tun_device} ~."))
                         .output()
                         .expect("Failed to execute command");
+                    resolvectl_run = true;
                 }
             } else {
                 break;
