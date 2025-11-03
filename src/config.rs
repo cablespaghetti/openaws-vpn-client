@@ -120,13 +120,12 @@ fn get_remote(content: &String) -> (String, u16, String) {
         .next()
         .unwrap();
 
-    return content
+    let proto = content
         .lines()
-        .filter(|p| p.starts_with("proto "))
-        .map(|p| {
-            let proto = (&p[p.rfind(" ").unwrap() + 1..]).parse::<String>().unwrap().to_string();
-            (remote.0.clone(), remote.1, proto)
-        })
+        .filter_map(|p| p.strip_prefix("proto "))
         .next()
-        .unwrap();
+        .unwrap_or("udp")
+        .to_string();
+
+    return (remote.0.to_string(), remote.1.to_string(), proto)
 }
