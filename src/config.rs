@@ -109,7 +109,7 @@ fn has_key(key: String) -> bool {
 }
 
 fn get_remote(content: &String) -> (String, u16, String) {
-    let map = content
+    let remote = content
         .lines()
         .filter(|p| p.starts_with("remote "))
         .map(|p| {
@@ -125,7 +125,7 @@ fn get_remote(content: &String) -> (String, u16, String) {
         .filter(|p| p.starts_with("proto "))
         .map(|p| {
             let proto = (&p[p.rfind(" ").unwrap() + 1..]).parse::<String>().unwrap().to_string();
-            (map.0.clone(), map.1, proto)
+            (remote.0.clone(), remote.1, proto)
         })
         .next()
         .unwrap();
