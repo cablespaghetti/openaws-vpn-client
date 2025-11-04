@@ -127,5 +127,5 @@ fn get_remote(content: &String) -> (String, u16, String) {
         .unwrap_or("udp")
         .to_string();
 
-    return (remote.0.to_string(), remote.1.to_string(), proto)
+    return (remote.0, remote.1, proto)
 }
